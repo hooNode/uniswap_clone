@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { LightningBoltIcon } from "@shared/utils/UniswapSVG";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { onToggleConnectModalAtom } from "recoils/modal";
 import SwapSettingModal from "../Modal/SwapSettingModal";
@@ -10,13 +10,33 @@ export default function SwapHeader() {
   const [isOnSettingModal, setIsOnSettingModal] = useState(false);
   const [isSettingAPIToggled, setIsSettingAPIToggled] = useState(false);
   const [option, setOption] = useState<"API" | "CLIENT">("API");
-  const [deadline, setDeadline] = useState<string>("");
-  const [slippageType, setSlippageType] = useState<"Default" | "Custom">(
-    "Default"
+  const swapSettings = useMemo(() => {
+    return localStorage?.getItem("swap-settings")
+      ? JSON.parse(localStorage.getItem("swap-settings") as string)
+      : {
+          realDeadline: "30",
+          slippageType: "Default",
+          realSlippagePercent: "0.10",
+        };
+    // eslint-disable-next-line
+  }, [localStorage?.getItem("swap-settings")]);
+  const [deadline, setDeadline] = useState<string>(
+    swapSettings.realDeadline === "30" ? "" : swapSettings.realDeadline
   );
-  const [slippagePercent, setSlippagePercent] = useState<string>("");
+  const [realDeadline, setRealDeadline] = useState<string>(
+    swapSettings.realDeadline || "30"
+  );
+  const [slippageType, setSlippageType] = useState<"Default" | "Custom">(
+    swapSettings.slippageType || "Default"
+  );
+  const [slippagePercent, setSlippagePercent] = useState<string>(
+    bigNumber(swapSettings.realSlippagePercent).eq("0.1")
+      ? ""
+      : numberFormat(swapSettings.realSlippagePercent, 2)
+  );
   const [realSlippagePercent, setRealSlippagePercent] = useState<string>(
-    slippagePercent === "" ? "0.10" : slippagePercent
+    JSON.parse(localStorage?.getItem("swap-settings") || "")
+      .realSlippagePercent || "0.10"
   );
 
   const settingRef = useRef<HTMLDivElement>(null);
@@ -37,21 +57,31 @@ export default function SwapHeader() {
       </div>
       <div
         className={`swap-settings ${isOnSettingModal ? "toggled" : ""} ${
-          slippagePercent
-            ? bigNumber(slippagePercent).eq("0.1")
+          realSlippagePercent && slippageType === "Custom"
+            ? bigNumber(realSlippagePercent).eq("0.1")
               ? "nomal"
               : "warn"
             : ""
         }`}
         onClick={() => {
           setTimeout(() => {
+            if (isOnSettingModal) {
+              localStorage.setItem(
+                "swap-settings",
+                JSON.stringify({
+                  realSlippagePercent,
+                  realDeadline: realDeadline.slice(0, 4),
+                  slippageType,
+                })
+              );
+            }
             setIsOnSettingModal((prev) => !prev);
           }, 0);
         }}
         ref={settingRef}
       >
         <div className="warn-container">
-          {slippagePercent && (
+          {realSlippagePercent && slippageType === "Custom" && (
             <span className="warn-component">
               {numberFormat(realSlippagePercent, 2)}%&nbsp;slippage
             </span>
@@ -77,6 +107,8 @@ export default function SwapHeader() {
           setSlippagePercent={setSlippagePercent}
           realSlippagePercent={realSlippagePercent}
           setRealSlippagePercent={setRealSlippagePercent}
+          realDeadline={realDeadline}
+          setRealDeadline={setRealDeadline}
         />
       )}
     </Styles.Wrapper>

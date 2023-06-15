@@ -135,11 +135,6 @@ const SettingsSlippage = ({
       setSlippageType("Custom");
     }
 
-    if (bigNumber(slippagePercent).eq("0.1")) {
-      setWarningStatue(false);
-    } else {
-      setWarningStatue(true);
-    }
     if (bigNumber(slippagePercent).gt("50")) {
       setErrorState(true);
       return;
@@ -154,6 +149,14 @@ const SettingsSlippage = ({
     // eslint-disable-next-line
   }, [slippagePercent]);
 
+  useEffect(() => {
+    if (bigNumber(realSlippagePercent).eq("0.1")) {
+      setWarningStatue(false);
+    } else {
+      setWarningStatue(true);
+    }
+  }, [realSlippagePercent]);
+
   const onClickOutside = (event: MouseEvent) => {
     if (!inputRef?.current?.contains(event.target as HTMLElement)) {
       if (bigNumber(slippagePercent).gt("50")) {
@@ -162,7 +165,7 @@ const SettingsSlippage = ({
         return;
       }
       if (bigNumber(slippagePercent).eq("0.1")) {
-        setSlippagePercent(numberFormat(slippagePercent, 2));
+        setSlippagePercent("");
         return;
       }
 
@@ -255,17 +258,18 @@ interface DeadlineProps {
   deadline: string;
   setDeadline: React.Dispatch<React.SetStateAction<string>>;
   isOnSettingModal: boolean;
+  realDeadline: string;
+  setRealDeadline: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SettingsDeadline = ({
   deadline,
   setDeadline,
   isOnSettingModal,
+  realDeadline,
+  setRealDeadline,
 }: DeadlineProps) => {
   const [isToggled, setIsToggled] = useState(deadline !== "");
-  const [realDeadline, setRealDeadline] = useState<string>(
-    deadline === "" ? "30" : deadline
-  );
 
   const [errorState, setErrorState] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -329,6 +333,7 @@ const SettingsDeadline = ({
       return;
     }
     setRealDeadline(deadline);
+    // eslint-disable-next-line
   }, [deadline]);
   return (
     <>
@@ -372,7 +377,6 @@ interface Props {
   setIsModalOpened: Dispatch<SetStateAction<boolean>>;
   deadline: string;
   setDeadline: React.Dispatch<React.SetStateAction<string>>;
-
   isSettingAPIToggled: boolean;
   setIsSettingAPIToggled: React.Dispatch<React.SetStateAction<boolean>>;
   option: "API" | "CLIENT";
@@ -383,6 +387,8 @@ interface Props {
   setSlippagePercent: React.Dispatch<React.SetStateAction<string>>;
   realSlippagePercent: string;
   setRealSlippagePercent: React.Dispatch<React.SetStateAction<string>>;
+  realDeadline: string;
+  setRealDeadline: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function SwapSettingModal({
@@ -401,6 +407,8 @@ export default function SwapSettingModal({
   setSlippagePercent,
   realSlippagePercent,
   setRealSlippagePercent,
+  realDeadline,
+  setRealDeadline,
 }: Props) {
   const onClickOutside = (e: MouseEvent) => {
     if (
@@ -408,6 +416,14 @@ export default function SwapSettingModal({
       !componentRef.current.contains(e.target as HTMLElement)
     ) {
       setTimeout(() => {
+        localStorage.setItem(
+          "swap-settings",
+          JSON.stringify({
+            realSlippagePercent,
+            realDeadline: realDeadline.slice(0, 4),
+            slippageType,
+          })
+        );
         setIsModalOpened(false);
       }, 0);
     }
@@ -419,7 +435,7 @@ export default function SwapSettingModal({
       window.removeEventListener("click", onClickOutside);
     };
     // eslint-disable-next-line
-  }, []);
+  }, [realSlippagePercent, realDeadline]);
   return (
     <Portal componentRef={componentRef}>
       <Styles.Wrapper>
@@ -449,6 +465,8 @@ export default function SwapSettingModal({
             deadline={deadline}
             setDeadline={setDeadline}
             isOnSettingModal={isOnSettingModal}
+            realDeadline={realDeadline}
+            setRealDeadline={setRealDeadline}
           />
         </Styles.SettingModalRow>
       </Styles.Wrapper>

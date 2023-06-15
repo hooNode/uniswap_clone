@@ -114,6 +114,7 @@ export default function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value.includes("/")) return;
     setInputValue(e.target.value);
   };
 
@@ -126,6 +127,7 @@ export default function Header() {
 
   const onPressKey = (e: KeyboardEvent) => {
     if (e.key === "/") {
+      searchInputRef?.current?.focus();
       setOnToggleSearchBar(true);
     }
     if (e.key === "Escape") {

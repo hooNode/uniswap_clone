@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import SwapBody from "@shared/components/Swap/SwapBody";
 import SwapHeader from "@shared/components/Swap/SwapHeader";
 import React from "react";
 
@@ -9,7 +10,9 @@ export default function index() {
         <Styles.SwapHeader>
           <SwapHeader />
         </Styles.SwapHeader>
-        <Styles.SwapBody></Styles.SwapBody>
+        <Styles.SwapBody>
+          <SwapBody />
+        </Styles.SwapBody>
         <Styles.SwapFooter></Styles.SwapFooter>
       </Styles.SwapMainComponent>
     </Styles.Wrapper>
@@ -33,7 +36,9 @@ const Styles = {
     border: 1px solid ${({ theme }) => theme.backgroundOutline};
   `,
 
-  SwapHeader: styled.header``,
+  SwapHeader: styled.header`
+    margin-bottom: 10px;
+  `,
   SwapBody: styled.article``,
   SwapFooter: styled.div``,
 };
