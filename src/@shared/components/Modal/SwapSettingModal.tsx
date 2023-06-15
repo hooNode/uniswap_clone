@@ -22,8 +22,8 @@ import { AlertTriangle } from "react-feather";
 interface SettingAPIProps {
   isSettingAPIToggled: boolean;
   setIsSettingAPIToggled: React.Dispatch<React.SetStateAction<boolean>>;
-  option: "API" | "CLIENT";
-  setOption: React.Dispatch<React.SetStateAction<"API" | "CLIENT">>;
+  option: "API" | "CLIENT" | "ACTIVE";
+  setOption: React.Dispatch<React.SetStateAction<"API" | "CLIENT" | "ACTIVE">>;
 }
 
 const SettingsAPI = ({
@@ -32,10 +32,26 @@ const SettingsAPI = ({
   option,
   setOption,
 }: SettingAPIProps) => {
+  const [firstRendered, setFirstRendered] = useState(true);
   const onToggle = () => {
     setIsSettingAPIToggled((prev) => !prev);
-    if (!isSettingAPIToggled) setOption("API");
   };
+
+  useEffect(() => {
+    if (firstRendered) setFirstRendered(false);
+
+    if (isSettingAPIToggled) setOption("ACTIVE");
+    else {
+      if (firstRendered) {
+        setOption(
+          JSON.parse(localStorage.getItem("swap-settings") as string).option
+        );
+      } else {
+        setOption("API");
+      }
+    }
+    // eslint-disable-next-line
+  }, [isSettingAPIToggled]);
   return (
     <>
       <div className="setting">
@@ -379,8 +395,8 @@ interface Props {
   setDeadline: React.Dispatch<React.SetStateAction<string>>;
   isSettingAPIToggled: boolean;
   setIsSettingAPIToggled: React.Dispatch<React.SetStateAction<boolean>>;
-  option: "API" | "CLIENT";
-  setOption: React.Dispatch<React.SetStateAction<"API" | "CLIENT">>;
+  option: "API" | "CLIENT" | "ACTIVE";
+  setOption: React.Dispatch<React.SetStateAction<"API" | "CLIENT" | "ACTIVE">>;
   slippageType: "Default" | "Custom";
   setSlippageType: React.Dispatch<React.SetStateAction<"Default" | "Custom">>;
   slippagePercent: string;
@@ -422,6 +438,7 @@ export default function SwapSettingModal({
             realSlippagePercent,
             realDeadline: realDeadline.slice(0, 4),
             slippageType,
+            option,
           })
         );
         setIsModalOpened(false);
@@ -435,7 +452,7 @@ export default function SwapSettingModal({
       window.removeEventListener("click", onClickOutside);
     };
     // eslint-disable-next-line
-  }, [realSlippagePercent, realDeadline]);
+  }, [realSlippagePercent, realDeadline, option, slippageType]);
   return (
     <Portal componentRef={componentRef}>
       <Styles.Wrapper>
@@ -508,6 +525,7 @@ const Row = styled.div`
 const Styles = {
   Wrapper: styled.div`
     position: absolute;
+    z-index: 9;
     display: flex;
     flex-direction: column;
     gap: 16px;

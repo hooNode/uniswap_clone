@@ -127,7 +127,6 @@ const commonTheme = {
 
   // media queries
 
-  hoverToggleState: colors.pink500,
   hoverState: opacity(24, colors.blue200),
   hoverDefault: opacity(8, colors.gray300),
 };
@@ -194,6 +193,9 @@ export const darkTheme = {
   stateOverlayHover: opacity(8, colors.gray300),
   stateOverlayPressed: opacity(24, colors.gray200),
 
+  hoverToggleState: colors.blue500,
+  SwapButtonState: colors.gray700,
+  SwapButtonHoverState: opacity(80, colors.gray700),
   searchBackground: `rgba(255,255,255,0.07)`,
   searchOutline: `rgba(255,255,255,0.07)`,
 };
@@ -252,6 +254,9 @@ export const lightTheme: Theme = {
   stateOverlayHover: opacity(8, colors.gray300),
   stateOverlayPressed: opacity(24, colors.gray200),
 
+  hoverToggleState: colors.pink500,
+  SwapButtonState: colors.gray100,
+  SwapButtonHoverState: colors.gray50,
   searchBackground: `rgba(255,255,255, 0.35)`,
   searchOutline: opacity(1, colors.black),
 };

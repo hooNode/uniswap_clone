@@ -278,6 +278,7 @@ const InputComponent = styled.div`
     > input {
       all: unset;
       display: block;
+      font-weight: 300;
       width: 100%;
       text-overflow: ellipsis;
       overflow: hidden;

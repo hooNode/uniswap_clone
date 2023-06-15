@@ -13,7 +13,7 @@ const ButtonWrapper = styled.button`
   background-color: ${({ theme }) => theme.accentActionSoft};
   height: 40px;
   color: ${({ theme }) => theme.accentAction};
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   padding: 10px 12px;
   border-radius: 9999px;

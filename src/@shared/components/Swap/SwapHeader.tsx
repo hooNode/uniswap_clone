@@ -1,15 +1,12 @@
 import styled from "@emotion/styled";
-import { LightningBoltIcon } from "@shared/utils/UniswapSVG";
+import { bigNumber, numberFormat } from "@shared/utils/number";
 import { useMemo, useRef, useState } from "react";
+import { Settings } from "react-feather";
 import { useRecoilState } from "recoil";
 import { onToggleConnectModalAtom } from "recoils/modal";
 import SwapSettingModal from "../Modal/SwapSettingModal";
-import { bigNumber, numberFormat } from "@shared/utils/number";
-import { Settings } from "react-feather";
 export default function SwapHeader() {
   const [isOnSettingModal, setIsOnSettingModal] = useState(false);
-  const [isSettingAPIToggled, setIsSettingAPIToggled] = useState(false);
-  const [option, setOption] = useState<"API" | "CLIENT">("API");
   const swapSettings = useMemo(() => {
     return localStorage?.getItem("swap-settings")
       ? JSON.parse(localStorage.getItem("swap-settings") as string)
@@ -17,9 +14,16 @@ export default function SwapHeader() {
           realDeadline: "30",
           slippageType: "Default",
           realSlippagePercent: "0.10",
+          option: "ACTIVE",
         };
     // eslint-disable-next-line
   }, [localStorage?.getItem("swap-settings")]);
+  const [isSettingAPIToggled, setIsSettingAPIToggled] = useState(
+    swapSettings.option === "ACTIVE"
+  );
+  const [option, setOption] = useState<"API" | "CLIENT" | "ACTIVE">(
+    swapSettings.option || "ACTIVE"
+  );
   const [deadline, setDeadline] = useState<string>(
     swapSettings.realDeadline === "30" ? "" : swapSettings.realDeadline
   );
@@ -72,6 +76,7 @@ export default function SwapHeader() {
                   realSlippagePercent,
                   realDeadline: realDeadline.slice(0, 4),
                   slippageType,
+                  option,
                 })
               );
             }
@@ -168,6 +173,7 @@ const Styles = {
           background-color: ${({ theme }) => theme.accentTextLightPrimary};
           .warn-component {
             font-size: 12px;
+            font-weight: 300;
             color: ${({ theme }) => theme.textTertiary};
           }
         }
@@ -177,6 +183,7 @@ const Styles = {
           background-color: ${({ theme }) => theme.accentWarningSoft};
           .warn-component {
             font-size: 12px;
+            font-weight: 300;
             color: ${({ theme }) => theme.accentWarning};
           }
         }

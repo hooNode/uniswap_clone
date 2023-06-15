@@ -92,7 +92,7 @@ const Styles = {
     right: 0px;
     display: flex;
     height: calc(100vh - 16px);
-    z-index: ${({ theme }) => theme.zIndex.modal + 1};
+    z-index: ${({ theme }) => theme.zIndex.modal + 1000};
     transform: translateX(384px);
     transition: transform 200ms ease-in-out;
     &.toggled {
@@ -141,7 +141,7 @@ const Styles = {
 
       span {
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 400;
         color: ${({ theme }) => theme.textPrimary};
       }
       .settings {
@@ -188,7 +188,7 @@ const Styles = {
         }
         > span {
           font-size: 16px;
-          font-weight: 600;
+          font-weight: 500;
           color: ${({ theme }) => theme.textPrimary};
           padding: 0 8px;
         }
@@ -209,7 +209,8 @@ const Styles = {
       margin-top: 12px;
       > span {
         font-size: 12px;
-        font-weight: 400;
+        font-weight: 300;
+        line-height: 130%;
         color: ${({ theme }) => theme.textTertiary};
         width: 100%;
         text-align: left;
