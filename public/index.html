@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>Uniswap Clone</title>
+    <meta
+      name="description"
+      content="Swap or provide liquidity on the Uniswap Protocol"
+    />
+
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="%PUBLIC_URL%/favicon.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="192x192"
+      href="%PUBLIC_URL%/images/192x192_App_Icon.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="512x512"
+      href="%PUBLIC_URL%/images/512x512_App_Icon.png"
+    />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#FC72FF" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link
+      rel="preload"
+      href="%PUBLIC_URL%/fonts/Pretendard/Pretendard-Medium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <style>
+      * {
+        font-family: "Pretendard", sans-serif;
+        box-sizing: border-box;
+      }
+
+      html body {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        word-break: keep-all;
+        word-wrap: break-word;
+        -webkit-text-size-adjust: none;
+        -webkit-overflow-scrolling: touch;
+        overflow-y: overlay;
+      }
+
+      button {
+        all: unset;
+        cursor: pointer;
+        padding: 0;
+        border: none;
+        outline: none;
+        text-align: center;
+        background-color: transparent;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      a {
+        cursor: pointer;
+        text-decoration: none;
+        outline: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      #background-radial-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        pointer-events: none;
+        width: 200vw;
+        height: 200vh;
+        transform: translate(-50vw, -100vh);
+        z-index: -1;
+      }
+
+      html,
+      body,
+      #root {
+        min-height: 100%;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html {
+          background: linear-gradient(180deg, #202738 0%, #070816 100%);
+        }
+        #background-radial-gradient {
+          background: linear-gradient(180deg, #202738 0%, #070816 100%);
+        }
+      }
+
+      @media (prefers-color-scheme: light) {
+        html {
+          background: radial-gradient(
+              100% 100% at 50% 0%,
+              rgba(255, 184, 226, 0.51) 0%,
+              rgba(255, 255, 255, 0) 100%
+            ),
+            #ffffff;
+        }
+        #background-radial-gradient {
+          background: radial-gradient(
+              100% 100% at 50% 0%,
+              rgba(255, 184, 226, 0.51) 0%,
+              rgba(255, 255, 255, 0) 100%
+            ),
+            #ffffff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <div id="background-radial-gradient"></div>
+  </body>
+</html>
