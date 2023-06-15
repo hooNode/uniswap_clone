@@ -15,6 +15,9 @@ export default function SwapHeader() {
     "Default"
   );
   const [slippagePercent, setSlippagePercent] = useState<string>("");
+  const [realSlippagePercent, setRealSlippagePercent] = useState<string>(
+    slippagePercent === "" ? "0.10" : slippagePercent
+  );
 
   const settingRef = useRef<HTMLDivElement>(null);
   const [onToggleConnectModal, setOnToggleConnectModal] = useRecoilState(
@@ -50,7 +53,7 @@ export default function SwapHeader() {
         <div className="warn-container">
           {slippagePercent && (
             <span className="warn-component">
-              {numberFormat(slippagePercent, 2)}%&nbsp;slippage
+              {numberFormat(realSlippagePercent, 2)}%&nbsp;slippage
             </span>
           )}
           <SettingsSVGCompent />
@@ -72,6 +75,8 @@ export default function SwapHeader() {
           setSlippageType={setSlippageType}
           slippagePercent={slippagePercent}
           setSlippagePercent={setSlippagePercent}
+          realSlippagePercent={realSlippagePercent}
+          setRealSlippagePercent={setRealSlippagePercent}
         />
       )}
     </Styles.Wrapper>
@@ -122,7 +127,7 @@ const Styles = {
       .warn-container {
         display: flex;
         align-items: center;
-        padding: 6px 12px;
+        padding: 4px 12px;
         border-radius: 16px;
         gap: 8px;
       }
@@ -133,7 +138,21 @@ const Styles = {
             font-size: 12px;
             color: ${({ theme }) => theme.textTertiary};
           }
-          &:hover {
+        }
+      }
+      &.warn {
+        .warn-container {
+          background-color: ${({ theme }) => theme.accentWarningSoft};
+          .warn-component {
+            font-size: 12px;
+            color: ${({ theme }) => theme.accentWarning};
+          }
+        }
+      }
+      &.toggled,
+      &:hover {
+        &.nomal {
+          .warn-container {
             background-color: ${({ theme }) => theme.hoverDefault};
             .warn-component {
               color: ${({ theme }) => theme.backgroundInteractive};
@@ -146,29 +165,20 @@ const Styles = {
             }
           }
         }
-      }
-      &.warn {
-        .warn-container {
-          background-color: ${({ theme }) => theme.accentWarningSoft};
-          .warn-component {
-            font-size: 12px;
-            color: ${({ theme }) => theme.accentWarning};
-          }
-          &:hover {
+        &.warn {
+          .warn-container {
+            background-color: ${({ theme }) =>
+              theme.accentWarningPressedBackground};
+            .warn-component {
+              color: ${({ theme }) => theme.accentWarningPressedColor};
+            }
             circle {
-              stroke: ${({ theme }) => theme.textSecondary};
+              stroke: ${({ theme }) => theme.textTertiary};
             }
             path {
-              stroke: ${({ theme }) => theme.textSecondary};
+              stroke: ${({ theme }) => theme.textTertiary};
             }
           }
-        }
-      }
-      &.toggled,
-      &:hover {
-        path {
-          fill: none;
-          stroke: ${({ theme }) => theme.textTertiary};
         }
       }
     }

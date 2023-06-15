@@ -84,6 +84,8 @@ interface SettingsSlippageProps {
   slippagePercent: string;
   setSlippagePercent: React.Dispatch<React.SetStateAction<string>>;
   isOnSettingModal: boolean;
+  realSlippagePercent: string;
+  setRealSlippagePercent: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SettingsSlippage = ({
@@ -92,13 +94,10 @@ const SettingsSlippage = ({
   slippagePercent,
   setSlippagePercent,
   isOnSettingModal,
+  realSlippagePercent,
+  setRealSlippagePercent,
 }: SettingsSlippageProps) => {
-  const [realSlippagePercent, setRealSlippagePercent] = useState<string>(
-    slippagePercent === "" ? "0.10" : slippagePercent
-  );
-  const [isToggled, setIsToggled] = useState(
-    !bigNumber(realSlippagePercent).eq("0.1")
-  );
+  const [isToggled, setIsToggled] = useState(!!slippagePercent);
   const inputRef = useRef<HTMLInputElement>(null);
   const [errorState, setErrorState] = useState(false);
   const [warningStatue, setWarningStatue] = useState(false);
@@ -163,7 +162,7 @@ const SettingsSlippage = ({
         return;
       }
       if (bigNumber(slippagePercent).eq("0.1")) {
-        setSlippagePercent("");
+        setSlippagePercent(numberFormat(slippagePercent, 2));
         return;
       }
 
@@ -373,6 +372,7 @@ interface Props {
   setIsModalOpened: Dispatch<SetStateAction<boolean>>;
   deadline: string;
   setDeadline: React.Dispatch<React.SetStateAction<string>>;
+
   isSettingAPIToggled: boolean;
   setIsSettingAPIToggled: React.Dispatch<React.SetStateAction<boolean>>;
   option: "API" | "CLIENT";
@@ -381,6 +381,8 @@ interface Props {
   setSlippageType: React.Dispatch<React.SetStateAction<"Default" | "Custom">>;
   slippagePercent: string;
   setSlippagePercent: React.Dispatch<React.SetStateAction<string>>;
+  realSlippagePercent: string;
+  setRealSlippagePercent: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function SwapSettingModal({
@@ -397,6 +399,8 @@ export default function SwapSettingModal({
   setSlippageType,
   slippagePercent,
   setSlippagePercent,
+  realSlippagePercent,
+  setRealSlippagePercent,
 }: Props) {
   const onClickOutside = (e: MouseEvent) => {
     if (
@@ -435,6 +439,8 @@ export default function SwapSettingModal({
             slippagePercent={slippagePercent}
             setSlippagePercent={setSlippagePercent}
             isOnSettingModal={isOnSettingModal}
+            realSlippagePercent={realSlippagePercent}
+            setRealSlippagePercent={setRealSlippagePercent}
           />
         </Styles.SettingModalRow>
         <Row />
