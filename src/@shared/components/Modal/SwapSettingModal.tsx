@@ -1,3 +1,10 @@
+import styled from "@emotion/styled";
+import { ArrowDownSVG } from "@shared/utils/CommonSVG";
+import {
+  bigNumber,
+  numberFormat,
+  numberValidCheck,
+} from "@shared/utils/number";
 import React, {
   ChangeEvent,
   Dispatch,
@@ -7,16 +14,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Portal } from "../ModalLayout/Portal";
-import styled from "@emotion/styled";
-import Toggle from "../Common/Toggle";
 import { HelpCircle } from "react-feather";
-import { ArrowDownSVG } from "@shared/utils/CommonSVG";
-import {
-  bigNumber,
-  numberFormatComma,
-  numberValidCheck,
-} from "@shared/utils/number";
+import Toggle from "../Common/Toggle";
+import { Portal } from "../ModalLayout/Portal";
 
 interface SettingAPIProps {
   isSettingAPIToggled: boolean;
@@ -91,39 +91,85 @@ const SettingsSlippage = ({
   setSlippagePercent,
 }: SettingsSlippageProps) => {
   const [isToggled, setIsToggled] = useState(false);
-  const [realSlippagePercent, setRealSlippagePercent] =
-    useState<string>(slippagePercent);
+  const [realSlippagePercent, setRealSlippagePercent] = useState<string>(
+    slippagePercent === "" ? "0.10" : slippagePercent
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const [errorState, setErrorState] = useState(false);
+
   const onToggle = () => {
     setIsToggled((prev) => !prev);
   };
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    if (!numberValidCheck(value)) return;
+
+    if (value.includes(".")) {
+      if (value.split(".")[1].length > 2) return;
+    }
+
+    if (!numberValidCheck(value)) {
+      return;
+    }
+    setSlippagePercent(value);
   };
 
-  const onClickOutside = (event: MouseEvent) => {
-    if (!inputRef?.current?.contains(event.target as HTMLElement)) {
-    }
+  const onClickType = (type: "Default" | "Custom") => {
+    setSlippageType(type);
   };
 
   useEffect(() => {
-    if (slippageType === "Default") setSlippagePercent("");
+    if (slippageType === "Default") {
+      setSlippagePercent("");
+    }
     // eslint-disable-next-line
   }, [slippageType]);
 
   useEffect(() => {
-    if (slippagePercent === "") setSlippageType("Default");
+    if (slippagePercent === "") {
+      setSlippageType("Default");
+    } else {
+      setSlippageType("Custom");
+    }
+
+    if (bigNumber(slippagePercent).gt("50")) {
+      setErrorState(true);
+    } else {
+      setErrorState(false);
+    }
+    if (slippagePercent === "") {
+      setRealSlippagePercent("0.10");
+      return;
+    }
+    setRealSlippagePercent(slippagePercent);
     // eslint-disable-next-line
   }, [slippagePercent]);
 
+  const onClickOutside = (event: MouseEvent) => {
+    if (!inputRef?.current?.contains(event.target as HTMLElement)) {
+      if (bigNumber(slippagePercent).gt("50")) {
+        setSlippagePercent(numberFormat("50", 2));
+        return;
+      }
+      if (bigNumber(slippagePercent).eq("0.1")) {
+        setSlippagePercent("");
+        return;
+      }
+
+      if (slippagePercent === "") {
+        return;
+      }
+
+      setSlippagePercent(numberFormat(slippagePercent, 2));
+    }
+  };
+
   useEffect(() => {
-    if (!errorState) return;
+    if (slippageType === "Default") return;
     window.addEventListener("click", onClickOutside);
     return () => window.removeEventListener("click", onClickOutside);
     // eslint-disable-next-line
-  }, [slippagePercent, errorState]);
+  }, [slippagePercent, errorState, slippageType]);
+
   return (
     <>
       <div className="setting">
@@ -140,23 +186,48 @@ const SettingsSlippage = ({
           <span>
             {realSlippagePercent === ""
               ? "자동"
-              : numberFormatComma(realSlippagePercent)}
+              : numberFormat(realSlippagePercent, 2)}
           </span>
           <ArrowDownSVGComponent />
         </div>
       </div>
       <div
-        className={`overflow-component ${isToggled ? "toggled" : ""}`}
-        ref={inputRef}
+        className={`overflow-component ${errorState ? "more" : ""} ${
+          isToggled ? "toggled" : ""
+        }`}
       >
-        <div className={`optional-component ${errorState ? "error" : ""}`}>
-          <input
-            className="deadline-input"
-            placeholder={"30"}
-            value={slippagePercent}
-            onChange={onChange}
-          />
-          <span className="deadline-input-placeholder">분</span>
+        <div className={`optional-slippage ${errorState ? "error" : ""}`}>
+          <div className="slippage-type">
+            <div
+              className={`slippage-type-item ${
+                slippageType === "Default" ? "current" : ""
+              }`}
+              onClick={() => onClickType("Default")}
+            >
+              자동
+            </div>
+            <div
+              className={`slippage-type-item ${
+                slippageType === "Custom" ? "current" : ""
+              }`}
+              onClick={() => onClickType("Custom")}
+            >
+              사용자 정의
+            </div>
+          </div>
+          <div className="slippage-input">
+            <input
+              placeholder="0.10"
+              value={slippagePercent}
+              onChange={onChange}
+              ref={inputRef}
+            />
+            <span className="input-placeholder">%</span>
+          </div>
+        </div>
+
+        <div className="warning-message">
+          귀하의 거래는 선불이고 불리한 거래를 초래할 수 있습니다.
         </div>
       </div>
     </>
@@ -253,10 +324,10 @@ const SettingsDeadline = ({ deadline, setDeadline }: DeadlineProps) => {
       </div>
 
       <div
-        className={`overflow-component ${isToggled ? "toggled" : ""}`}
+        className={`overflow-component deadline ${isToggled ? "toggled" : ""}`}
         ref={inputRef}
       >
-        <div className={`optional-component ${errorState ? "error" : ""}`}>
+        <div className={`optional-deadline ${errorState ? "error" : ""}`}>
           <input
             className="deadline-input"
             placeholder={"30"}
@@ -450,7 +521,7 @@ const Styles = {
         padding: 12px 16px;
         gap: 4px;
         color: ${({ theme }) => theme.textPrimary};
-        background-color: ${({ theme }) => theme.accentTextLightPrimary};
+        background-color: ${({ theme }) => theme.backgroundModule};
         cursor: pointer;
         &-title {
           display: flex;
@@ -498,18 +569,21 @@ const Styles = {
 
     .overflow-component {
       height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       overflow: hidden;
       transition: height 125ms linear;
-      &.open {
-        height: 40px;
-      }
 
       &.toggled {
         height: 40px;
       }
+      &.more {
+        height: 86px;
+      }
     }
 
-    .optional-component {
+    .optional-deadline {
       width: 100%;
       display: flex;
       align-items: center;
@@ -537,6 +611,65 @@ const Styles = {
       }
       .deadline-input-placeholder {
         color: ${({ theme }) => theme.textPrimary};
+      }
+    }
+    .optional-slippage {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+
+      &.error {
+        .slippage-input {
+          border: 1px solid ${({ theme }) => theme.accentFailureSoft};
+          > input {
+            color: ${({ theme }) => theme.accentFailure};
+          }
+        }
+      }
+
+      .slippage-type {
+        display: flex;
+        align-items: center;
+        width: 160px;
+        height: 40px;
+        padding: 4px;
+        border: 1px solid ${({ theme }) => theme.backgroundOutline};
+        border-radius: 16px;
+        &-item {
+          padding: 6px 12px;
+          border-radius: 12px;
+          color: ${({ theme }) => theme.textPrimary};
+          cursor: pointer;
+          &.current {
+            background-color: ${({ theme }) => theme.backgroundInteractive};
+            cursor: default;
+          }
+        }
+      }
+
+      .slippage-input {
+        display: flex;
+        width: 116px;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 16px;
+        border-radius: 12px;
+        border: 1px solid ${({ theme }) => theme.backgroundOutline};
+        > input {
+          all: unset;
+          color: ${({ theme }) => theme.textPrimary};
+          width: 100%;
+          text-align: right;
+
+          &::placeholder {
+            color: ${({ theme }) => theme.backgroundInteractive};
+          }
+        }
+        .input-placeholder {
+          color: ${({ theme }) => theme.textPrimary};
+        }
       }
     }
   `,
