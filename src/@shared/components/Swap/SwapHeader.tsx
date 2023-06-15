@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { onToggleConnectModalAtom } from "recoils/modal";
 import SwapSettingModal from "../Modal/SwapSettingModal";
-
+import { bigNumber, numberFormat } from "@shared/utils/number";
+import { Settings } from "react-feather";
 export default function SwapHeader() {
   const [isOnSettingModal, setIsOnSettingModal] = useState(false);
   const [isSettingAPIToggled, setIsSettingAPIToggled] = useState(false);
@@ -32,15 +33,34 @@ export default function SwapHeader() {
         </span>
       </div>
       <div
-        className={`swap-settings ${isOnSettingModal ? "toggled" : ""}`}
-        onClick={() => setIsOnSettingModal((prev) => !prev)}
+        className={`swap-settings ${isOnSettingModal ? "toggled" : ""} ${
+          slippagePercent
+            ? bigNumber(slippagePercent).eq("0.1")
+              ? "nomal"
+              : "warn"
+            : ""
+        }`}
+        onClick={() => {
+          setTimeout(() => {
+            setIsOnSettingModal((prev) => !prev);
+          }, 0);
+        }}
         ref={settingRef}
       >
-        <LightningSVGCompent />
+        <div className="warn-container">
+          {slippagePercent && (
+            <span className="warn-component">
+              {numberFormat(slippagePercent, 2)}%&nbsp;slippage
+            </span>
+          )}
+          <SettingsSVGCompent />
+        </div>
       </div>
+
       {isOnSettingModal && (
         <SwapSettingModal
           componentRef={settingRef}
+          isOnSettingModal={isOnSettingModal}
           setIsModalOpened={setIsOnSettingModal}
           deadline={deadline}
           setDeadline={setDeadline}
@@ -58,9 +78,12 @@ export default function SwapHeader() {
   );
 }
 
-const LightningSVGCompent = styled(LightningBoltIcon)`
+const SettingsSVGCompent = styled(Settings)`
+  width: 20px;
+  circle {
+    stroke: ${({ theme }) => theme.textSecondary};
+  }
   path {
-    fill: none;
     stroke: ${({ theme }) => theme.textSecondary};
   }
 `;
@@ -95,8 +118,52 @@ const Styles = {
     }
 
     .swap-settings {
-      padding: 6px 12px;
       cursor: pointer;
+      .warn-container {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 16px;
+        gap: 8px;
+      }
+      &.nomal {
+        .warn-container {
+          background-color: ${({ theme }) => theme.accentTextLightPrimary};
+          .warn-component {
+            font-size: 12px;
+            color: ${({ theme }) => theme.textTertiary};
+          }
+          &:hover {
+            background-color: ${({ theme }) => theme.hoverDefault};
+            .warn-component {
+              color: ${({ theme }) => theme.backgroundInteractive};
+            }
+            circle {
+              stroke: ${({ theme }) => theme.textTertiary};
+            }
+            path {
+              stroke: ${({ theme }) => theme.textTertiary};
+            }
+          }
+        }
+      }
+      &.warn {
+        .warn-container {
+          background-color: ${({ theme }) => theme.accentWarningSoft};
+          .warn-component {
+            font-size: 12px;
+            color: ${({ theme }) => theme.accentWarning};
+          }
+          &:hover {
+            circle {
+              stroke: ${({ theme }) => theme.textSecondary};
+            }
+            path {
+              stroke: ${({ theme }) => theme.textSecondary};
+            }
+          }
+        }
+      }
       &.toggled,
       &:hover {
         path {

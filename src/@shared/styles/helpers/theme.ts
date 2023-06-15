@@ -1,4 +1,5 @@
 // Based mostly on https://github.com/Uniswap/interface/blob/main/src/theme/index.tsx
+
 import { opacity } from "./opacity";
 
 export const colors = {
@@ -123,6 +124,8 @@ const commonTheme = {
   brandedGradient: "linear-gradient(139.57deg, #FF79C9 4.35%, #FFB8E2 96.44%);",
   promotionalGradient:
     "radial-gradient(101.8% 4091.31% at 0% 0%, #4673FA 0%, #9646FA 100%);",
+
+  // media queries
 
   hoverToggleState: colors.pink500,
   hoverState: opacity(24, colors.blue200),

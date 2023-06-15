@@ -128,6 +128,9 @@ export default function Header() {
     if (e.key === "/") {
       setOnToggleSearchBar(true);
     }
+    if (e.key === "Escape") {
+      setOnToggleSearchBar(false);
+    }
   };
 
   useEffect(() => {

@@ -17,6 +17,7 @@ import React, {
 import { HelpCircle } from "react-feather";
 import Toggle from "../Common/Toggle";
 import { Portal } from "../ModalLayout/Portal";
+import { AlertTriangle } from "react-feather";
 
 interface SettingAPIProps {
   isSettingAPIToggled: boolean;
@@ -82,6 +83,7 @@ interface SettingsSlippageProps {
   setSlippageType: React.Dispatch<React.SetStateAction<"Default" | "Custom">>;
   slippagePercent: string;
   setSlippagePercent: React.Dispatch<React.SetStateAction<string>>;
+  isOnSettingModal: boolean;
 }
 
 const SettingsSlippage = ({
@@ -89,13 +91,17 @@ const SettingsSlippage = ({
   setSlippageType,
   slippagePercent,
   setSlippagePercent,
+  isOnSettingModal,
 }: SettingsSlippageProps) => {
-  const [isToggled, setIsToggled] = useState(false);
   const [realSlippagePercent, setRealSlippagePercent] = useState<string>(
     slippagePercent === "" ? "0.10" : slippagePercent
   );
+  const [isToggled, setIsToggled] = useState(
+    !bigNumber(realSlippagePercent).eq("0.1")
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const [errorState, setErrorState] = useState(false);
+  const [warningStatue, setWarningStatue] = useState(false);
 
   const onToggle = () => {
     setIsToggled((prev) => !prev);
@@ -110,6 +116,7 @@ const SettingsSlippage = ({
     if (!numberValidCheck(value)) {
       return;
     }
+    if (value === "") setSlippageType("Default");
     setSlippagePercent(value);
   };
 
@@ -125,14 +132,18 @@ const SettingsSlippage = ({
   }, [slippageType]);
 
   useEffect(() => {
-    if (slippagePercent === "") {
-      setSlippageType("Default");
-    } else {
+    if (slippagePercent !== "") {
       setSlippageType("Custom");
     }
 
+    if (bigNumber(slippagePercent).eq("0.1")) {
+      setWarningStatue(false);
+    } else {
+      setWarningStatue(true);
+    }
     if (bigNumber(slippagePercent).gt("50")) {
       setErrorState(true);
+      return;
     } else {
       setErrorState(false);
     }
@@ -147,7 +158,8 @@ const SettingsSlippage = ({
   const onClickOutside = (event: MouseEvent) => {
     if (!inputRef?.current?.contains(event.target as HTMLElement)) {
       if (bigNumber(slippagePercent).gt("50")) {
-        setSlippagePercent(numberFormat("50", 2));
+        setSlippagePercent(numberFormat(realSlippagePercent, 2));
+        setErrorState(false);
         return;
       }
       if (bigNumber(slippagePercent).eq("0.1")) {
@@ -164,7 +176,12 @@ const SettingsSlippage = ({
   };
 
   useEffect(() => {
-    if (slippageType === "Default") return;
+    if (slippageType === "Default" || !isOnSettingModal) {
+      return () => {
+        window.removeEventListener("click", onClickOutside);
+      };
+    }
+
     window.addEventListener("click", onClickOutside);
     return () => window.removeEventListener("click", onClickOutside);
     // eslint-disable-next-line
@@ -184,7 +201,7 @@ const SettingsSlippage = ({
           onClick={onToggle}
         >
           <span>
-            {realSlippagePercent === ""
+            {slippageType === "Default"
               ? "자동"
               : numberFormat(realSlippagePercent, 2)}
           </span>
@@ -192,9 +209,9 @@ const SettingsSlippage = ({
         </div>
       </div>
       <div
-        className={`overflow-component ${errorState ? "more" : ""} ${
-          isToggled ? "toggled" : ""
-        }`}
+        className={`overflow-component ${
+          isToggled && warningStatue && slippageType !== "Default" ? "warn" : ""
+        } ${isToggled ? "toggled" : ""} `}
       >
         <div className={`optional-slippage ${errorState ? "error" : ""}`}>
           <div className="slippage-type">
@@ -227,7 +244,8 @@ const SettingsSlippage = ({
         </div>
 
         <div className="warning-message">
-          귀하의 거래는 선불이고 불리한 거래를 초래할 수 있습니다.
+          <CautionTriangle />
+          <span>귀하의 거래는 선불이고 불리한 거래를 초래할 수 있습니다.</span>
         </div>
       </div>
     </>
@@ -237,9 +255,14 @@ const SettingsSlippage = ({
 interface DeadlineProps {
   deadline: string;
   setDeadline: React.Dispatch<React.SetStateAction<string>>;
+  isOnSettingModal: boolean;
 }
 
-const SettingsDeadline = ({ deadline, setDeadline }: DeadlineProps) => {
+const SettingsDeadline = ({
+  deadline,
+  setDeadline,
+  isOnSettingModal,
+}: DeadlineProps) => {
   const [isToggled, setIsToggled] = useState(deadline !== "");
   const [realDeadline, setRealDeadline] = useState<string>(
     deadline === "" ? "30" : deadline
@@ -278,6 +301,7 @@ const SettingsDeadline = ({ deadline, setDeadline }: DeadlineProps) => {
           fixedNumber = fixedNumber.slice(0, 3);
         }
         setDeadline(fixedNumber);
+        setErrorState(false);
       } else {
         if (deadline === "30") {
           setDeadline("");
@@ -287,7 +311,9 @@ const SettingsDeadline = ({ deadline, setDeadline }: DeadlineProps) => {
   };
 
   useEffect(() => {
-    if (!errorState) return;
+    if (!errorState || !isOnSettingModal) {
+      return () => window.removeEventListener("click", onClickOutside);
+    }
     window.addEventListener("click", onClickOutside);
     return () => window.removeEventListener("click", onClickOutside);
     // eslint-disable-next-line
@@ -343,6 +369,7 @@ const SettingsDeadline = ({ deadline, setDeadline }: DeadlineProps) => {
 
 interface Props {
   componentRef: RefObject<HTMLElement>;
+  isOnSettingModal: boolean;
   setIsModalOpened: Dispatch<SetStateAction<boolean>>;
   deadline: string;
   setDeadline: React.Dispatch<React.SetStateAction<string>>;
@@ -358,6 +385,7 @@ interface Props {
 
 export default function SwapSettingModal({
   componentRef,
+  isOnSettingModal,
   setIsModalOpened,
   deadline,
   setDeadline,
@@ -375,7 +403,9 @@ export default function SwapSettingModal({
       componentRef.current &&
       !componentRef.current.contains(e.target as HTMLElement)
     ) {
-      setIsModalOpened(false);
+      setTimeout(() => {
+        setIsModalOpened(false);
+      }, 0);
     }
   };
 
@@ -404,11 +434,16 @@ export default function SwapSettingModal({
             setSlippageType={setSlippageType}
             slippagePercent={slippagePercent}
             setSlippagePercent={setSlippagePercent}
+            isOnSettingModal={isOnSettingModal}
           />
         </Styles.SettingModalRow>
         <Row />
         <Styles.SettingModalRow>
-          <SettingsDeadline deadline={deadline} setDeadline={setDeadline} />
+          <SettingsDeadline
+            deadline={deadline}
+            setDeadline={setDeadline}
+            isOnSettingModal={isOnSettingModal}
+          />
         </Styles.SettingModalRow>
       </Styles.Wrapper>
     </Portal>
@@ -428,6 +463,16 @@ const HelpCircleSVGComponent = styled(HelpCircle)`
   width: 16px;
   height: 16px;
   margin-left: 8px;
+`;
+
+const CautionTriangle = styled(AlertTriangle)`
+  width: 16px;
+  height: 24px;
+  color: ${({ theme }) => theme.accentWarning};
+
+  > path {
+    stroke: ${({ theme }) => theme.accentWarning} !important;
+  }
 `;
 
 const Row = styled.div`
@@ -578,8 +623,22 @@ const Styles = {
       &.toggled {
         height: 40px;
       }
-      &.more {
-        height: 86px;
+      &.warn {
+        height: 80px;
+      }
+
+      .warning-message {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 12px;
+
+        & > span {
+          font-size: 12px;
+          word-break: break-all;
+          color: ${({ theme }) => theme.accentWarning};
+        }
       }
     }
 
