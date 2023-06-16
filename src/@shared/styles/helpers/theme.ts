@@ -194,6 +194,8 @@ export const darkTheme = {
   stateOverlayPressed: opacity(24, colors.gray200),
 
   hoverToggleState: colors.blue500,
+  hoverButtonState: opacity(16, colors.blue500),
+  hoverActiveState: opacity(16, colors.blue600),
   SwapButtonState: colors.gray700,
   SwapButtonHoverState: opacity(80, colors.gray700),
   searchBackground: `rgba(255,255,255,0.07)`,
@@ -255,6 +257,8 @@ export const lightTheme: Theme = {
   stateOverlayPressed: opacity(24, colors.gray200),
 
   hoverToggleState: colors.pink500,
+  hoverButtonState: opacity(16, colors.pink500),
+  hoverActiveState: opacity(16, colors.pink600),
   SwapButtonState: colors.gray100,
   SwapButtonHoverState: colors.gray50,
   searchBackground: `rgba(255,255,255, 0.35)`,

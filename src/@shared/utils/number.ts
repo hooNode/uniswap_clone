@@ -9,7 +9,7 @@ export function numberValidCheck(value: string) {
   return regex.test(value);
 }
 
-export function decimalConverter(amount: string, decimal: number = 18) {
+export function decimalConverterWithpad(amount: string, decimal: number = 18) {
   const isDecimals = amount.includes(".");
   const [integer, decimals] = amount?.split(".");
 
@@ -24,6 +24,17 @@ export function decimalConverter(amount: string, decimal: number = 18) {
     : amount.slice(0, 59) + ".".padEnd(decimal + 1, "0");
 }
 
+export function decimalConverter(amount: string, decimal: number = 18) {
+  const isDecimals = amount.includes(".");
+  const [integer, decimals] = amount?.split(".");
+
+  return isDecimals
+    ? [integer.slice(0, 59), decimals.slice(0, decimal)].join(
+        decimal === 0 ? "" : "."
+      )
+    : amount.slice(0, 59);
+}
+
 export function numberFormat(value: number | string, digits: number = 0) {
   const nextValue =
     // eslint-disable-next-line
@@ -35,12 +46,11 @@ export function numberFormat(value: number | string, digits: number = 0) {
     return "";
   }
 
-  return decimalConverter(bnValue.toString(), digits);
+  return decimalConverterWithpad(bnValue.toString(), digits);
 }
-
-export function numberFormatComma(value: number | string, digits: number = 0) {
+export function numberFormatComma(value?: number | string, digits: number = 0) {
+  if (!value) return;
   const nextValue =
-    // eslint-disable-next-line
     typeof value === "string" ? value.replace(/\,/g, "") : value;
 
   const bnValue = bigNumber(nextValue);

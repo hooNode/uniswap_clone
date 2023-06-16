@@ -6,5 +6,9 @@ export const Portal = <T extends HTMLElement>({
   componentRef,
 }: {
   children: ReactNode;
-  componentRef: RefObject<T>;
-}) => createPortal(children, componentRef.current as T);
+  componentRef?: RefObject<T>;
+}) =>
+  createPortal(
+    children,
+    componentRef ? (componentRef.current as T) : document.body
+  );

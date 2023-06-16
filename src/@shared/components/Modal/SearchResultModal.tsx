@@ -7,7 +7,7 @@ import {
 import { ABLE_TO_USE_TOKENS } from "@shared/wagmi/constants/variable";
 import { RefObject, useEffect, useMemo, useState } from "react";
 import { Portal } from "../ModalLayout/Portal";
-import { numberFormatComma } from "@shared/utils/number";
+import { numberFormat, numberFormatComma } from "@shared/utils/number";
 
 interface Props {
   componentRef: RefObject<HTMLDivElement>;
@@ -119,10 +119,10 @@ export default function SearchResultModal({
                       </div>
                     </div>
                     <div className="result-item-right">
-                      <span>${numberFormatComma(token.tokenPerUsd)}</span>
+                      <span>${numberFormat(token.tokenPerUsd, 2)}</span>
                       <span>
                         <ArrowRightSVG />
-                        {`${numberFormatComma(0)}%`}
+                        {`${numberFormat(0, 2)}%`}
                       </span>
                     </div>
                   </div>
@@ -164,10 +164,10 @@ export default function SearchResultModal({
                   </div>
                 </div>
                 <div className="result-item-right">
-                  <span>${numberFormatComma(token.tokenPerUsd)}</span>
+                  <span>${numberFormat(token.tokenPerUsd, 2)}</span>
                   <span>
                     <ArrowRightSVG />
-                    {`${numberFormatComma(0)}%`}
+                    {`${numberFormat(0, 2)}%`}
                   </span>
                 </div>
               </div>

@@ -92,7 +92,7 @@ const Styles = {
     right: 0px;
     display: flex;
     height: calc(100vh - 16px);
-    z-index: ${({ theme }) => theme.zIndex.modal + 1000};
+    z-index: ${({ theme }) => theme.zIndex.modal + 1};
     transform: translateX(384px);
     transition: transform 200ms ease-in-out;
     &.toggled {

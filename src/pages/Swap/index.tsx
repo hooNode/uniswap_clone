@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import SwapBody from "@shared/components/Swap/SwapBody";
+import SwapFooter from "@shared/components/Swap/SwapFooter";
 import SwapHeader from "@shared/components/Swap/SwapHeader";
 import React from "react";
 
@@ -13,7 +14,9 @@ export default function index() {
         <Styles.SwapBody>
           <SwapBody />
         </Styles.SwapBody>
-        <Styles.SwapFooter></Styles.SwapFooter>
+        <Styles.SwapFooter>
+          <SwapFooter />
+        </Styles.SwapFooter>
       </Styles.SwapMainComponent>
     </Styles.Wrapper>
   );
@@ -40,5 +43,7 @@ const Styles = {
     margin-bottom: 10px;
   `,
   SwapBody: styled.article``,
-  SwapFooter: styled.div``,
+  SwapFooter: styled.div`
+    width: 100%;
+  `,
 };
