@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import SwapListModal from "@shared/components/Modal/SwapListModal";
 import { ArrowDownSVG } from "@shared/utils/CommonSVG";
 import { bigNumber, numberFormatComma } from "@shared/utils/number";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { selectedTokenAtom } from "recoils/token";
 

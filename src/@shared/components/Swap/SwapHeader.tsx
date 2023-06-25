@@ -8,7 +8,7 @@ import SwapSettingModal from "../Modal/SwapSettingModal";
 export default function SwapHeader() {
   const [isOnSettingModal, setIsOnSettingModal] = useState(false);
   const swapSettings = useMemo(() => {
-    return localStorage?.getItem("swap-settings")
+    return !!localStorage.getItem("swap-settings")
       ? JSON.parse(localStorage.getItem("swap-settings") as string)
       : {
           realDeadline: "30",
@@ -39,8 +39,9 @@ export default function SwapHeader() {
       : numberFormat(swapSettings.realSlippagePercent, 2)
   );
   const [realSlippagePercent, setRealSlippagePercent] = useState<string>(
-    JSON.parse(localStorage?.getItem("swap-settings") || "")
-      .realSlippagePercent || "0.10"
+    localStorage?.getItem("swap-settings")
+      ? JSON.parse(localStorage.getItem("swap-settings")!).realSlippagePercent
+      : "0.10"
   );
 
   const settingRef = useRef<HTMLDivElement>(null);

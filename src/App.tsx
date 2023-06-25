@@ -7,6 +7,8 @@ import NotFound from "pages/NotFound";
 import Swap from "pages/Swap";
 import { Navigate, Route, Routes } from "react-router-dom";
 
+window.Buffer = window.Buffer || require("buffer").Buffer;
+
 BigNumber.config({
   EXPONENTIAL_AT: 59,
   DECIMAL_PLACES: 18,

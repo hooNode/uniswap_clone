@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { bigNumber, numberFormatComma } from "@shared/utils/number";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { ArrowDown } from "react-feather";
 import { useRecoilState } from "recoil";
 import { selectedTokenAtom } from "recoils/token";
